@@ -1,0 +1,41 @@
+name: add comment
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: add comment
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Create a message file
+      run: |
+        echo "Line 1" | tee    comment-body.txt
+        echo "Line 2" | tee -a comment-body.txt
+        echo "Line 3" | tee -a comment-body.txt
+
+    - id: get-comment-body
+      if: ${{ github.event_name == 'push' }}
+      run: |
+        body="$(cat comment-body.txt)"
+        delimiter="$(openssl rand -hex 8)"
+        echo "body<<$delimiter" >> $GITHUB_OUTPUT
+        echo "$body" >> $GITHUB_OUTPUT
+        echo "$delimiter" >> $GITHUB_OUTPUT
+
+    - name: Create a commit comment
+      if: ${{ github.event_name == 'push' }}
+      uses: peter-evans/commit-comment@v2
+      with:
+        body: ${{ steps.get-comment-body.outputs.body }}
+
+    - name: Crate a PR Comment
+      if: ${{ github.event_name == 'pull_request' }}
+      uses: thollander/actions-comment-pull-request@v2
+      with:
+        filePath: ./clamav.md
