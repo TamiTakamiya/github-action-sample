@@ -12,6 +12,9 @@ jobs:
     name: add comment
     runs-on: ubuntu-20.04
 
+    permissions: 
+      pull-requests: write 
+
     steps:
     - name: Create a message file
       run: |
