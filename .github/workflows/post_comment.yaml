@@ -15,14 +15,14 @@ jobs:
     steps:
     - name: Create a message file
       run: |
-        echo "Line 1" | tee    comment-body.txt
-        echo "Line 2" | tee -a comment-body.txt
-        echo "Line 3" | tee -a comment-body.txt
+        echo "Line 1" | tee    ./comment-body.txt
+        echo "Line 2" | tee -a ./comment-body.txt
+        echo "Line 3" | tee -a ./comment-body.txt
 
     - id: get-comment-body
       if: ${{ github.event_name == 'push' }}
       run: |
-        body="$(cat comment-body.txt)"
+        body="$(cat ./comment-body.txt)"
         delimiter="$(openssl rand -hex 8)"
         echo "body<<$delimiter" >> $GITHUB_OUTPUT
         echo "$body" >> $GITHUB_OUTPUT
@@ -38,4 +38,4 @@ jobs:
       if: ${{ github.event_name == 'pull_request' }}
       uses: thollander/actions-comment-pull-request@v2
       with:
-        filePath: ./clamav.md
+        filePath: ./comment-body.txt
